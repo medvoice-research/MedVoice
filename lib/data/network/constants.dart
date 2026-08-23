@@ -7,4 +7,7 @@ class Constants {
   // Recordings API (medvoice-service contract v1)
   static String get recordings => "${baseUrl}recordings";
   static String recordingDetail(String id) => "${baseUrl}recordings/$id";
+
+  /// POST /auth/login — mock-account login.
+  static String get authLogin => "${baseUrl}auth/login";
 }

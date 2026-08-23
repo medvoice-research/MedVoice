@@ -111,11 +111,18 @@ class _SignInView extends BaseStateView<SignInView, SignInController> {
                   Padding(
                     padding: EdgeInsets.all(toSize(10)),
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (_controller.submitForm()) {
-                          pushScreen(Pages.main, isAllowBack: false);
-                        }
-                      },
+                      onPressed: _controller.loadingState()
+                          ? null
+                          : () async {
+                              FocusScope.of(context).unfocus();
+                              final ok = await _controller.submitForm();
+                              if (!mounted) return;
+                              if (ok) {
+                                pushScreen(Pages.main, isAllowBack: false);
+                              } else if (_controller.errorMessage != null) {
+                                showErrorFromServer(_controller.errorMessage);
+                              }
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         fixedSize: Size(size.width * 0.76, toSize(50)),
