@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/flutter_clean_architecture.dart'
     as clean;
+import 'package:med_voice/app/pages/home/medical_archive/audio_playback/audio_playback_view.dart';
+import 'package:med_voice/app/utils/pages.dart';
+import 'package:med_voice/data/network/constants.dart';
 import 'package:med_voice/data/repository_impl/audio_repository_impl.dart';
 
 import '../../../../../common/base_controller.dart';
@@ -59,6 +62,12 @@ class _RecordingDetailView
                 ...buildRecordingResult(context, detail),
                 const SizedBox(height: 12),
                 FilledButton.tonalIcon(
+                  onPressed: () => _playRecording(context, detail),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Play recording'),
+                ),
+                const SizedBox(height: 8),
+                FilledButton.tonalIcon(
                   style: FilledButton.styleFrom(
                       foregroundColor: Colors.red.shade900),
                   onPressed: () => _confirmDelete(context),
@@ -68,6 +77,19 @@ class _RecordingDetailView
               ],
             ),
     );
+  }
+
+  void _playRecording(BuildContext context, RecordingDetail detail) {
+    final String? url = detail.audioUrl;
+    if (url == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Audio unavailable for this recording.')),
+      );
+      return;
+    }
+    // Backend sends a relative path; resolve() also passes absolute URLs through.
+    final String absolute = Uri.parse(Constants.baseUrl).resolve(url).toString();
+    pushScreen(Pages.audioPlayback, arguments: {recordingInfo: absolute});
   }
 
   Future<void> _confirmDelete(BuildContext context) async {

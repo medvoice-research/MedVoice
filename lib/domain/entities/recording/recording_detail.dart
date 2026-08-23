@@ -9,6 +9,7 @@ class RecordingDetail {
   final String language;
   final RecordingTranscript transcript;
   final MedicalDocument medicalDocument;
+  final String? audioUrl;
 
   RecordingDetail({
     required this.recordingId,
@@ -18,6 +19,7 @@ class RecordingDetail {
     required this.language,
     required this.transcript,
     required this.medicalDocument,
+    this.audioUrl,
   });
 
   factory RecordingDetail.fromJson(Map<String, dynamic> json) => RecordingDetail(
@@ -30,5 +32,6 @@ class RecordingDetail {
             Map<String, dynamic>.from((json['transcript'] as Map?) ?? {})),
         medicalDocument: MedicalDocument.fromJson(
             Map<String, dynamic>.from((json['medical_document'] as Map?) ?? {})),
+        audioUrl: json['audio_url'] as String?,
       );
 }

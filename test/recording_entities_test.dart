@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:med_voice/domain/entities/recording/medical_document.dart';
 import 'package:med_voice/domain/entities/recording/recording_detail.dart';
 import 'package:med_voice/domain/entities/recording/recording_list.dart';
 import 'package:med_voice/domain/entities/recording/create_recording_response.dart';
@@ -33,6 +32,30 @@ void main() {
     expect(detail.medicalDocument.entities.length, 1);
     expect(detail.medicalDocument.entities.first.code, 'I10');
     expect(detail.medicalDocument.phi.detected, false);
+  });
+
+  test('RecordingDetail.fromJson parses audio_url when present, null when not',
+      () {
+    const minimalJson = {
+      'recording_id': 'rec_x',
+      'status': 'completed',
+      'created_at': 't',
+      'language': 'en',
+      'transcript': {'full_text': '', 'segments': []},
+      'medical_document': {
+        'soap': {},
+        'entities': [],
+        'phi': {'detected': false, 'entities': []},
+      },
+    };
+
+    final withAudio = RecordingDetail.fromJson({
+      ...minimalJson,
+      'audio_url': '/recordings/rec_x/audio',
+    });
+    expect(withAudio.audioUrl, '/recordings/rec_x/audio');
+
+    expect(RecordingDetail.fromJson(minimalJson).audioUrl, isNull);
   });
 
   test('RecordingList.fromJson parses list response', () {
