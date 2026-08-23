@@ -27,8 +27,24 @@ Locate and run the main.dart file to start building the application.
 
 The app talks to [medvoice-service](https://github.com/medvoice-research/medvoice-service)
 over its `/recordings` API (multipart upload -> transcript + SOAP/ICD-10/PHI
-document; list, get, delete).
+document; list, get, delete, audio replay) and `/auth/login` (mock-account
+authentication).
 
 Set `Constants.baseUrl` in `lib/data/network/constants.dart` to your server:
 `http://localhost:8000/` for the emulator, your LAN IP or an ngrok URL for a
 physical device.
+
+### Mock accounts
+
+Seeded by the backend on startup (idempotent). Login validates against
+`POST /auth/login`:
+
+| email | password | role |
+|---|---|---|
+| `doctor@medvoice.local` | `MedVoice2026!` | physician |
+| `nurse@medvoice.local` | `MedVoice2026!` | nurse |
+| `admin@medvoice.local` | `Admin2026!` | admin |
+
+Wrong password / unknown email -> 401 `invalid_credentials`, shown as
+"Invalid email or password." on the login screen. App **signup is not wired
+to the backend** yet.
