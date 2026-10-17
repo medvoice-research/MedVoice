@@ -87,8 +87,9 @@ class _RecordingDetailView
       );
       return;
     }
-    // Backend sends a relative path; resolve() also passes absolute URLs through.
-    final String absolute = Uri.parse(Constants.baseUrl).resolve(url).toString();
+    // Backend sends a root-relative path; drop the leading '/' so resolve() keeps any
+    // baseUrl path prefix (e.g. http://host/api/). Absolute URLs still pass through.
+    final String absolute = Uri.parse(Constants.baseUrl).resolve(url.replaceFirst(RegExp(r'^/'), '')).toString();
     pushScreen(Pages.audioPlayback, arguments: {recordingInfo: absolute});
   }
 
