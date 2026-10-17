@@ -123,8 +123,21 @@ class _RecordingAndroidView
             recordingAndroidController!.speechEnabled
                 ? _buildTimer(theme)
                 : SizedBox(height: toSize(25)),
+            SizedBox(height: toSize(10)),
+            SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(value: 'vi', label: Text('Tiếng Việt')),
+                ButtonSegment(value: 'en', label: Text('English')),
+              ],
+              selected: {recordingAndroidController!.uploadLanguage},
+              onSelectionChanged: recordingAndroidController!.speechEnabled
+                  ? null
+                  : (s) =>
+                      recordingAndroidController!.setUploadLanguage(s.first),
+            ),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(110), top: toSize(30)),
+              padding: EdgeInsets.only(bottom: toSize(110), top: toSize(20)),
               child: AvatarGlow(
                 animate: recordingAndroidController!.speechEnabled ? true : false,
                 glowColor: theme.colorScheme.primary,

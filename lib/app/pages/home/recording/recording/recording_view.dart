@@ -97,8 +97,20 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
             recordingController!.speechEnabled
               ? _buildTimer(theme)
               : SizedBox(height: toSize(25)),
+            SizedBox(height: toSize(10)),
+            SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(value: 'vi', label: Text('Tiếng Việt')),
+                ButtonSegment(value: 'en', label: Text('English')),
+              ],
+              selected: {recordingController!.uploadLanguage},
+              onSelectionChanged: recordingController!.speechEnabled
+                  ? null
+                  : (s) => recordingController!.setUploadLanguage(s.first),
+            ),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(110), top: toSize(30)),
+              padding: EdgeInsets.only(bottom: toSize(110), top: toSize(20)),
               child: AvatarGlow(
                 animate: recordingController!.speechEnabled ? true : false,
                 glowColor: theme.colorScheme.primary,

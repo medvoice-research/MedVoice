@@ -19,13 +19,15 @@ class RecordingPresenter extends Presenter {
   @override
   void dispose() {}
 
-  Future<void> executeUploadRecording(File file, String? patientName) async {
+  Future<void> executeUploadRecording(
+      File file, String? patientName, String language) async {
     try {
       final RecordingDetail detail = await _audioRepository.uploadRecording(
         fileBytes: await file.readAsBytes(),
         fileName: _fileNameFor(file),
         patientName:
             (patientName == null || patientName.isEmpty) ? null : patientName,
+        language: language,
       );
       onUploadRecordingSuccess?.call(detail);
     } catch (e) {

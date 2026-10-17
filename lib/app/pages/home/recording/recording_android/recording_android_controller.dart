@@ -46,6 +46,8 @@ class RecordingAndroidController extends BaseController {
   List<String> resultTranscriptFiltered = [];
   String enModelName = 'assets/vosk_model/vosk-model-small-en-us-0.15.zip';
   String vnModelName = 'vosk-model-vn-0.4.zip';
+  // ponytail: vosk live text stays English (only en model bundled); server transcript follows uploadLanguage.
+  String uploadLanguage = 'vi';
 
   RecordingAndroidController(audioRepository)
       : _presenter = RecordingPresenter(audioRepository) {
@@ -219,7 +221,12 @@ class RecordingAndroidController extends BaseController {
 
   void onUploadAudioFile(File file, String? patientName) {
     showLoadingProgress();
-    _presenter.executeUploadRecording(file, patientName);
+    _presenter.executeUploadRecording(file, patientName, uploadLanguage);
+  }
+
+  void setUploadLanguage(String lang) {
+    uploadLanguage = lang;
+    refreshUI();
   }
 
   void clearResult() {

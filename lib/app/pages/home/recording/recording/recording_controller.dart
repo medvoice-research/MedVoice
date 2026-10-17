@@ -23,7 +23,8 @@ class RecordingController extends BaseController {
   int recordDuration = 0;
   String guideText = 'Press the button and start speaking';
   double confidenceLevel = 1.0;
-  String selectedLocaleId = 'en_US';
+  String uploadLanguage = 'vi';
+  String get selectedLocaleId => uploadLanguage == 'vi' ? 'vi_VN' : 'en_US';
   final audioRecorder = Record();
   StreamSubscription<RecordState>? recordSub;
   RecordState recordState = RecordState.stop;
@@ -200,7 +201,12 @@ class RecordingController extends BaseController {
 
   void onUploadAudioFile(File file, String? patientName) {
     showLoadingProgress();
-    _presenter.executeUploadRecording(file, patientName);
+    _presenter.executeUploadRecording(file, patientName, uploadLanguage);
+  }
+
+  void setUploadLanguage(String lang) {
+    uploadLanguage = lang;
+    refreshUI();
   }
 
   void clearResult() {
