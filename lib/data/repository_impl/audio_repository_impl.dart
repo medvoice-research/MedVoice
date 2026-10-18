@@ -42,7 +42,7 @@ class AudioRepositoryImpl implements AudioRepository {
     if (response.statusCode != 201) {
       throw Exception('Upload failed: ${response.statusCode} ${response.body}');
     }
-    return RecordingDetail.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return RecordingDetail.fromJson(jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
   }
 
   @override
@@ -51,7 +51,7 @@ class AudioRepositoryImpl implements AudioRepository {
     if (response.statusCode != 200) {
       throw Exception('List failed: ${response.statusCode}');
     }
-    return RecordingList.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return RecordingList.fromJson(jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
   }
 
   @override
@@ -60,7 +60,7 @@ class AudioRepositoryImpl implements AudioRepository {
     if (response.statusCode != 200) {
       throw Exception('Get failed: ${response.statusCode}');
     }
-    return RecordingDetail.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return RecordingDetail.fromJson(jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
   }
 
   @override

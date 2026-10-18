@@ -69,6 +69,21 @@ void main() {
     expect(detail.recordingId, 'rec_1');
   });
 
+  test('getRecordingDetail decodes Vietnamese as UTF-8 when the server sends no charset', () async {
+    // FastAPI sends `application/json` without `charset`; package:http then falls back to Latin-1 for `body`.
+    final mock = MockClient((request) async => http.Response.bytes(
+          utf8.encode(jsonEncode({'recording_id': 'rec_1', 'status': 'completed', 'created_at': 't',
+            'patient_name': 'Lê Thị Hoa', 'language': 'vi',
+            'transcript': {'full_text': 'đau ngực trái', 'segments': []},
+            'medical_document': {'soap': {}, 'entities': [], 'phi': {'detected': false, 'entities': []}}})),
+          200,
+          headers: {'content-type': 'application/json'},
+        ));
+    final detail = await AudioRepositoryImpl.withClient(mock).getRecordingDetail('rec_1');
+    expect(detail.patientName, 'Lê Thị Hoa');
+    expect(detail.transcript.fullText, 'đau ngực trái');
+  });
+
   test('deleteRecording expects 204', () async {
     final mock = MockClient((request) async {
       expect(request.method, 'DELETE');

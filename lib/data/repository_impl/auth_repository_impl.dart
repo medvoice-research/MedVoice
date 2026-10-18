@@ -35,7 +35,7 @@ class AuthRepositoryImpl implements AuthRepository {
         throw const AuthException('network_error');
       }
       return AuthResult.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
+          jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
     } on AuthException {
       rethrow;
     } catch (_) {
