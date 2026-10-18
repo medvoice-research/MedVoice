@@ -137,7 +137,7 @@ class _RecordingAndroidView
                       recordingAndroidController!.setUploadLanguage(s.first),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(110), top: toSize(20)),
+              padding: EdgeInsets.only(bottom: toSize(60), top: toSize(20)),
               child: AvatarGlow(
                 animate: recordingAndroidController!.speechEnabled ? true : false,
                 glowColor: theme.colorScheme.primary,
