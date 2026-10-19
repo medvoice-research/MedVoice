@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/recording/medical_document.dart';
+import '../../domain/entities/recording/recording_transcript.dart';
 import '../../domain/entities/recording/recording_detail.dart';
 import '../../domain/entities/recording/soap_note.dart';
 
@@ -11,6 +12,7 @@ List<Widget> buildRecordingResult(BuildContext context, RecordingDetail detail) 
   final MedicalDocument doc = detail.medicalDocument;
   return [
     _phiBanner(context, doc),
+    ..._termChecks(context, detail.transcript),
     if (detail.transcript.fullText.isNotEmpty)
       _section(context, 'Transcript', Text(detail.transcript.fullText)),
     ..._soapSections(context, doc.soap),
@@ -70,6 +72,43 @@ Widget _phiBanner(BuildContext context, MedicalDocument doc) {
       ),
     ),
   );
+}
+
+/// Medical-term guard: corrections made from the audio, and terms the doctor
+/// must check. When the guard couldn't run, say so instead of staying silent.
+List<Widget> _termChecks(BuildContext context, RecordingTranscript transcript) {
+  final status = transcript.termCheckStatus;
+  if (status == 'unavailable' || status == 'error') {
+    return [
+      Card(
+        color: Colors.orange.shade100,
+        child: const Padding(
+          padding: EdgeInsets.all(12),
+          child: Text('Medical term check unavailable: verify medicine and disease names against the audio.'),
+        ),
+      ),
+    ];
+  }
+  if (transcript.termChecks.isEmpty) return const [];
+  return [
+    _section(
+      context,
+      'Medical terms to check',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final t in transcript.termChecks)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Text(t.corrected
+                  ? '"${t.original}" → ${t.replacement} (corrected from the audio)'
+                  : '"${t.original}": check against the audio'
+                      '${t.suggestions.isEmpty ? '' : '. Maybe: ${t.suggestions.take(3).join(', ')}'}'),
+            ),
+        ],
+      ),
+    ),
+  ];
 }
 
 List<Widget> _soapSections(BuildContext context, SoapNote soap) {

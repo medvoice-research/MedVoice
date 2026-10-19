@@ -69,4 +69,40 @@ void main() {
     expect(find.text('Subjective'), findsNothing);
     expect(find.text('Medical entities'), findsNothing);
   });
+
+  Map<String, dynamic> withReview(Map<String, dynamic> review) => {
+        'recording_id': 'rec_3',
+        'status': 'completed',
+        'created_at': 't',
+        'patient_name': null,
+        'language': 'vi',
+        'transcript': {'full_text': 'đang dùng metformin', 'segments': [], 'term_review': review},
+        'medical_document': {'soap': {}, 'entities': [], 'phi': {'detected': false, 'entities': []}},
+      };
+
+  testWidgets('shows corrected and flagged medical terms', (tester) async {
+    await _pump(
+      tester,
+      RecordingDetail.fromJson(withReview({
+        'status': 'ok',
+        'terms': [
+          {'original': 'men hormone', 'replacement': 'metformin', 'action': 'corrected',
+           'suggestions': [{'term': 'metformin', 'score': -3.6}]},
+          {'original': 'tái hai', 'replacement': null, 'action': 'flagged',
+           'suggestions': [{'term': 'type 2', 'score': -9.0}, {'term': 'tái phát', 'score': -12.0}]},
+        ],
+      })),
+    );
+
+    expect(find.text('Medical terms to check'), findsOneWidget);
+    expect(find.text('"men hormone" → metformin (corrected from the audio)'), findsOneWidget);
+    expect(find.text('"tái hai": check against the audio. Maybe: type 2, tái phát'), findsOneWidget);
+  });
+
+  testWidgets('warns when the term check could not run', (tester) async {
+    await _pump(tester, RecordingDetail.fromJson(withReview({'status': 'unavailable', 'terms': []})));
+
+    expect(find.textContaining('Medical term check unavailable'), findsOneWidget);
+    expect(find.text('Medical terms to check'), findsNothing);
+  });
 }
