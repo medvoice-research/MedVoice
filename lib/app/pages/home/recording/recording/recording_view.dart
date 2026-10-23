@@ -63,9 +63,10 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
       body: SafeArea(
           child: Padding(
         padding: EdgeInsets.symmetric(horizontal: toSize(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
             SizedBox(height: toSize(10)),
             Text(
                 "Confidence level: ${recordingController!.confidenceLevel * 100}%",
@@ -110,7 +111,8 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                   : (s) => recordingController!.setUploadLanguage(s.first),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(60), top: toSize(20)),
+              // ponytail: keep the mic clear of the overlaid 82px bottom bar.
+              padding: EdgeInsets.only(bottom: 82, top: toSize(20)),
               child: AvatarGlow(
                 animate: recordingController!.speechEnabled ? true : false,
                 glowColor: theme.colorScheme.primary,
@@ -141,7 +143,8 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                                 Global.mColors['white_2'].toString())))),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       )),
     );
