@@ -25,5 +25,8 @@ void main() {
     await tester.pump();
     expect(tester.widget<SegmentedButton<String>>(find.byType(SegmentedButton<String>)).selected,
         {'en'});
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(milliseconds: 250));
   });
 }
