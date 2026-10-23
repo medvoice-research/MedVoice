@@ -125,6 +125,7 @@ class _RecordingAndroidView
                 ? _buildTimer(theme)
                 : SizedBox(height: toSize(25)),
             SizedBox(height: toSize(10)),
+            const Text('Upload language'),
             SegmentedButton<String>(
               showSelectedIcon: false,
               segments: const [
@@ -132,11 +133,12 @@ class _RecordingAndroidView
                 ButtonSegment(value: 'en', label: Text('English')),
               ],
               selected: {recordingAndroidController!.uploadLanguage},
-              onSelectionChanged: recordingAndroidController!.speechEnabled
+              onSelectionChanged: recordingAndroidController!.speechEnabled || recordingAndroidController!.isStartingRecording
                   ? null
                   : (s) =>
                       recordingAndroidController!.setUploadLanguage(s.first),
             ),
+            const Text('Live preview uses English only'),
             Padding(
               // ponytail: keep the mic clear of the overlaid 82px bottom bar.
               padding: EdgeInsets.only(bottom: 82, top: toSize(20)),

@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('recorder keeps language selector and microphone reachable on a compact phone',
+  testWidgets(
+      'recorder keeps language selector and microphone reachable on a compact phone',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.binding.setSurfaceSize(const Size(390, 667));
@@ -17,13 +18,24 @@ void main() {
     ));
     await tester.pump(const Duration(milliseconds: 250));
 
+    expect(
+        tester
+            .widget<SegmentedButton<String>>(
+                find.byType(SegmentedButton<String>))
+            .selected,
+        {'vi'});
+    expect(find.text('Upload language'), findsOneWidget);
     expect(find.text('Tiếng Việt'), findsOneWidget);
     expect(find.byIcon(Icons.mic_off), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.tap(find.text('English'));
     await tester.pump();
-    expect(tester.widget<SegmentedButton<String>>(find.byType(SegmentedButton<String>)).selected,
+    expect(
+        tester
+            .widget<SegmentedButton<String>>(
+                find.byType(SegmentedButton<String>))
+            .selected,
         {'en'});
 
     await tester.pumpWidget(const SizedBox.shrink());

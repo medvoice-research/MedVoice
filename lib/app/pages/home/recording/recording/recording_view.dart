@@ -99,6 +99,7 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
               ? _buildTimer(theme)
               : SizedBox(height: toSize(25)),
             SizedBox(height: toSize(10)),
+            const Text('Upload language'),
             SegmentedButton<String>(
               showSelectedIcon: false,
               segments: const [
@@ -106,7 +107,7 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                 ButtonSegment(value: 'en', label: Text('English')),
               ],
               selected: {recordingController!.uploadLanguage},
-              onSelectionChanged: recordingController!.speechEnabled
+              onSelectionChanged: recordingController!.speechEnabled || recordingController!.isStartingRecording
                   ? null
                   : (s) => recordingController!.setUploadLanguage(s.first),
             ),
