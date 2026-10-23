@@ -11,17 +11,19 @@ void main() {
   Constants.baseUrl = 'http://test.local:8000/';
 
   test('uploadRecording posts multipart and parses response', () async {
-    final mock = MockClient((request) async {
+    final mock = MockClient.streaming((request, _) async {
       expect(request.method, 'POST');
       expect(request.url.path, '/recordings');
       expect(request.headers['content-type'], contains('multipart/form-data'));
-      return http.Response(
-        jsonEncode({
+      expect(request, isA<http.MultipartRequest>());
+      expect((request as http.MultipartRequest).fields['language'], 'vi');
+      return http.StreamedResponse(
+        Stream.value(utf8.encode(jsonEncode({
           'recording_id': 'rec_1', 'status': 'completed', 'created_at': 't',
-          'patient_name': 'Jane', 'language': 'en',
-          'transcript': {'full_text': 'Hello', 'segments': []},
+          'patient_name': 'Lê Thị Hoa', 'language': 'vi',
+          'transcript': {'full_text': 'đau ngực trái', 'segments': []},
           'medical_document': {'soap': {}, 'entities': [], 'phi': {'detected': false, 'entities': []}},
-        }),
+        }))),
         201,
         headers: {'content-type': 'application/json'},
       );
@@ -31,9 +33,11 @@ void main() {
       fileBytes: Uint8List.fromList([1, 2, 3]),
       fileName: 'a.m4a',
       patientName: 'Jane',
+      language: 'vi',
     );
     expect(result.recordingId, 'rec_1');
-    expect(result.transcript.fullText, 'Hello');
+    expect(result.patientName, 'Lê Thị Hoa');
+    expect(result.transcript.fullText, 'đau ngực trái');
   });
 
   test('listRecordings parses list', () async {
