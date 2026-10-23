@@ -39,6 +39,11 @@ to change the server transcription language. iOS live dictation follows the
 selection. Android live preview uses the bundled English-only model; the
 uploaded recording still uses the selected server language.
 
+When the backend term guard runs, the recording result and archive detail show
+terms corrected from audio and terms to verify. If the guard cannot run, the
+result warns to check medicine and disease names against the audio; older
+recordings without `transcript.term_review` display normally.
+
 ### Mock accounts
 
 Seeded by the backend on startup (idempotent). Login validates against
