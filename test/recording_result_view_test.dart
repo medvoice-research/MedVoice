@@ -43,6 +43,8 @@ void main() {
     expect(find.text('Hypertension (I10)'), findsOneWidget);
     expect(find.text('diagnosis'), findsOneWidget);
     expect(find.text('PHI detected: Jane Doe'), findsOneWidget);
+    expect(find.text('Medical terms to check'), findsNothing);
+    expect(find.textContaining('Medical term check unavailable'), findsNothing);
   });
 
   testWidgets('renders the clear banner and no SOAP card when document is empty',
@@ -89,14 +91,16 @@ void main() {
           {'original': 'men hormone', 'replacement': 'metformin', 'action': 'corrected',
            'suggestions': [{'term': 'metformin', 'score': -3.6}]},
           {'original': 'tái hai', 'replacement': null, 'action': 'flagged',
-           'suggestions': [{'term': 'type 2', 'score': -9.0}, {'term': 'tái phát', 'score': -12.0}]},
+           'suggestions': [{'term': 'type 2', 'score': -9.0}, {'term': 'tái phát', 'score': -12.0},
+                           {'term': 'viêm phổi', 'score': -13.0}, {'term': 'ignore me', 'score': -15.0}]},
         ],
       })),
     );
 
     expect(find.text('Medical terms to check'), findsOneWidget);
     expect(find.text('"men hormone" → metformin (corrected from the audio)'), findsOneWidget);
-    expect(find.text('"tái hai": check against the audio. Maybe: type 2, tái phát'), findsOneWidget);
+    expect(find.text('"tái hai": check against the audio. Maybe: type 2, tái phát, viêm phổi'), findsOneWidget);
+    expect(find.textContaining('ignore me'), findsNothing);
   });
 
   testWidgets('warns when the term check could not run', (tester) async {

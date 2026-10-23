@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:med_voice/domain/entities/recording/recording_detail.dart';
 import 'package:med_voice/domain/entities/recording/recording_list.dart';
+import 'package:med_voice/domain/entities/recording/recording_transcript.dart';
 import 'package:med_voice/domain/entities/recording/create_recording_response.dart';
 
 void main() {
@@ -32,6 +33,29 @@ void main() {
     expect(detail.medicalDocument.entities.length, 1);
     expect(detail.medicalDocument.entities.first.code, 'I10');
     expect(detail.medicalDocument.phi.detected, false);
+  });
+
+  test('term review tolerates omitted fields and ignores unknown fields', () {
+    final legacy = RecordingTranscript.fromJson({'extra': 'ignored'});
+    expect(legacy.termCheckStatus, '');
+    expect(legacy.termChecks, isEmpty);
+
+    final review = RecordingTranscript.fromJson({
+      'term_review': {
+        'status': 'ok',
+        'extra': 'ignored',
+        'terms': [
+          {'original': 'tái hai', 'action': 'flagged', 'extra': true},
+          {'original': 'men hormone', 'replacement': 'metformin',
+           'suggestions': [{'term': 'metformin', 'score': -3.6, 'extra': true}]},
+        ],
+      },
+    });
+    expect(review.termCheckStatus, 'ok');
+    expect(review.termChecks.first.corrected, isFalse);
+    expect(review.termChecks.first.suggestions, isEmpty);
+    expect(review.termChecks.last.corrected, isTrue);
+    expect(review.termChecks.last.suggestions, ['metformin']);
   });
 
   test('RecordingDetail.fromJson parses audio_url when present, null when not',
