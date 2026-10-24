@@ -82,8 +82,11 @@ void main() {
     controller.refreshUI();
     await tester.pump();
     expect(find.text('Medical terms to check'), findsOneWidget);
-    await tester.drag(find.byType(ListView), const Offset(0, -1200));
-    await tester.pump();
+    await tester.scrollUntilVisible(
+        find.text('New recording'), 300,
+        scrollable: find.descendant(
+            of: find.byType(ListView), matching: find.byType(Scrollable)));
+    await tester.pumpAndSettle();
 
     expect(tester.getBottomLeft(find.byType(FilledButton)).dy, lessThan(585));
     expect(tester.takeException(), isNull);
