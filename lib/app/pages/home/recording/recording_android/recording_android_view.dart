@@ -140,35 +140,52 @@ class _RecordingAndroidView
             ),
             const Text('Live preview uses English only'),
             Padding(
-              // ponytail: keep the mic clear of the overlaid 82px bottom bar.
+              // ponytail: keep the mic and upload action clear of the overlaid 82px bottom bar.
               padding: EdgeInsets.only(bottom: 82, top: toSize(20)),
-              child: AvatarGlow(
-                animate: recordingAndroidController!.speechEnabled ? true : false,
-                glowColor: theme.colorScheme.primary,
-                glowRadiusFactor: 0.3,
-                duration: const Duration(milliseconds: 1700),
-                repeat: true,
-                child: InkWell(
-                    onTap: () {
-                      if (!recordingAndroidController!.speechEnabled) {
-                        recordingAndroidController!.startListening();
-                      } else {
-                        recordingAndroidController!.stopListening();
-                      }
-                    },
-                    child: Container(
-                        height: toSize(80),
-                        width: toSize(80),
-                        decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius: BorderRadius.circular(50)),
-                        child: Icon(
-                            recordingAndroidController!.speechEnabled
-                                ? Icons.mic
-                                : Icons.mic_off,
-                            size: toSize(35),
-                            color: HexColor(
-                                Global.mColors['white_2'].toString())))),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(width: 48),
+                  AvatarGlow(
+                    animate: recordingAndroidController!.speechEnabled
+                        ? true
+                        : false,
+                    glowColor: theme.colorScheme.primary,
+                    glowRadiusFactor: 0.3,
+                    duration: const Duration(milliseconds: 1700),
+                    repeat: true,
+                    child: InkWell(
+                        onTap: () {
+                          if (!recordingAndroidController!.speechEnabled) {
+                            recordingAndroidController!.startListening();
+                          } else {
+                            recordingAndroidController!.stopListening();
+                          }
+                        },
+                        child: Container(
+                            height: toSize(80),
+                            width: toSize(80),
+                            decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(50)),
+                            child: Icon(
+                                recordingAndroidController!.speechEnabled
+                                    ? Icons.mic
+                                    : Icons.mic_off,
+                                size: toSize(35),
+                                color: HexColor(
+                                    Global.mColors['white_2'].toString())))),
+                  ),
+                  IconButton(
+                    tooltip: 'Upload audio',
+                    icon: const Icon(Icons.upload_file),
+                    color: theme.colorScheme.primary,
+                    onPressed: recordingAndroidController!.speechEnabled ||
+                            recordingAndroidController!.isStartingRecording
+                        ? null
+                        : recordingAndroidController!.pickAndUploadAudio,
+                  ),
+                ],
               ),
             ),
             SizedBox(height: toSize(10)),

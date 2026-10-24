@@ -26,7 +26,7 @@ Locate and run the main.dart file to start building the application.
 ## Backend
 
 The app talks to [medvoice-service](https://github.com/medvoice-research/medvoice-service)
-over its `/recordings` API (multipart upload -> transcript + SOAP/ICD-10/PHI
+over its `/recordings` API (multipart upload of a recorded or picked audio file -> transcript + SOAP/ICD-10/PHI
 document; list, get, delete, audio replay) and `/auth/login` (mock-account
 authentication).
 

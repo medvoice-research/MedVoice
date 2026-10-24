@@ -95,7 +95,8 @@ class _MainView extends BaseStateView<MainView, MainController> {
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(24),
                           topRight: Radius.circular(24))),
-                  height: 82,
+                  // BottomNavigationBar pads itself by the home-indicator inset.
+                  height: 82 + MediaQuery.viewPaddingOf(context).bottom,
                   child: BottomNavigationBar(
                     elevation: 0,
                     type: BottomNavigationBarType.fixed,
