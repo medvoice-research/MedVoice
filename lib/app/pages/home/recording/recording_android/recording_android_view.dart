@@ -141,44 +141,46 @@ class _RecordingAndroidView
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-              // Mirrors the upload button's width so the mic stays centred.
-              const SizedBox(width: 48),
-              AvatarGlow(
-                animate: recordingAndroidController!.speechEnabled ? true : false,
-                glowColor: theme.colorScheme.primary,
-                glowRadiusFactor: 0.3,
-                duration: const Duration(milliseconds: 1700),
-                repeat: true,
-                child: InkWell(
-                    onTap: () {
-                      if (!recordingAndroidController!.speechEnabled) {
-                        recordingAndroidController!.startListening();
-                      } else {
-                        recordingAndroidController!.stopListening();
-                      }
-                    },
-                    child: Container(
-                        height: toSize(80),
-                        width: toSize(80),
-                        decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            borderRadius: BorderRadius.circular(50)),
-                        child: Icon(
-                            recordingAndroidController!.speechEnabled
-                                ? Icons.mic
-                                : Icons.mic_off,
-                            size: toSize(35),
-                            color: HexColor(
-                                Global.mColors['white_2'].toString())))),
-              ),
-              IconButton(
-                tooltip: 'Upload audio',
-                icon: const Icon(Icons.upload_file),
-                color: theme.colorScheme.primary,
-                onPressed: recordingAndroidController!.speechEnabled
-                    ? null
-                    : recordingAndroidController!.pickAndUploadAudio,
-              ),
+                  // Mirrors the upload button's width so the mic stays centred.
+                  const SizedBox(width: 48),
+                  AvatarGlow(
+                    animate: recordingAndroidController!.speechEnabled
+                        ? true
+                        : false,
+                    glowColor: theme.colorScheme.primary,
+                    glowRadiusFactor: 0.3,
+                    duration: const Duration(milliseconds: 1700),
+                    repeat: true,
+                    child: InkWell(
+                        onTap: () {
+                          if (!recordingAndroidController!.speechEnabled) {
+                            recordingAndroidController!.startListening();
+                          } else {
+                            recordingAndroidController!.stopListening();
+                          }
+                        },
+                        child: Container(
+                            height: toSize(80),
+                            width: toSize(80),
+                            decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(50)),
+                            child: Icon(
+                                recordingAndroidController!.speechEnabled
+                                    ? Icons.mic
+                                    : Icons.mic_off,
+                                size: toSize(35),
+                                color: HexColor(
+                                    Global.mColors['white_2'].toString())))),
+                  ),
+                  IconButton(
+                    tooltip: 'Upload audio',
+                    icon: const Icon(Icons.upload_file),
+                    color: theme.colorScheme.primary,
+                    onPressed: recordingAndroidController!.speechEnabled
+                        ? null
+                        : recordingAndroidController!.pickAndUploadAudio,
+                  ),
                 ],
               ),
             ),
