@@ -199,6 +199,8 @@ class _RecordingAndroidView
   Widget _resultBody(BuildContext context, RecordingDetail detail) {
     return Scaffold(
       body: SafeArea(
+        // ponytail: reserve the overlay even when the result is too short to scroll.
+        minimum: EdgeInsets.only(bottom: 82 + MediaQuery.viewPaddingOf(context).bottom),
         child: ListView(
           padding: EdgeInsets.all(toSize(16)),
           children: [
