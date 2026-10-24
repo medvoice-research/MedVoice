@@ -10,24 +10,27 @@ import 'package:med_voice/data/repository_impl/audio_repository_impl.dart';
 void main() {
   Constants.baseUrl = 'http://test.local:8000/';
 
-  test('uploadRecording streams the file from disk and parses response', () async {
+  test('uploadRecording streams the file and sends language as UTF-8 multipart', () async {
     final dir = await Directory.systemTemp.createTemp('upload_test');
     addTearDown(() => dir.delete(recursive: true));
     final file = File('${dir.path}/visit.mp3')..writeAsStringSync('AUDIO-BYTES');
 
-    final mock = MockClient((request) async {
+    final mock = MockClient.streaming((request, bodyStream) async {
       expect(request.method, 'POST');
       expect(request.url.path, '/recordings');
       expect(request.headers['content-type'], contains('multipart/form-data'));
-      expect(request.body, contains('filename="a.m4a"'));
-      expect(request.body, contains('AUDIO-BYTES'));
-      return http.Response(
-        jsonEncode({
+      expect(request, isA<http.MultipartRequest>());
+      expect((request as http.MultipartRequest).fields['language'], 'vi');
+      final body = utf8.decode(await bodyStream.toBytes());
+      expect(body, contains('filename="a.m4a"'));
+      expect(body, contains('AUDIO-BYTES'));
+      return http.StreamedResponse(
+        Stream.value(utf8.encode(jsonEncode({
           'recording_id': 'rec_1', 'status': 'completed', 'created_at': 't',
-          'patient_name': 'Jane', 'language': 'en',
-          'transcript': {'full_text': 'Hello', 'segments': []},
+          'patient_name': 'Lê Thị Hoa', 'language': 'vi',
+          'transcript': {'full_text': 'đau ngực trái', 'segments': []},
           'medical_document': {'soap': {}, 'entities': [], 'phi': {'detected': false, 'entities': []}},
-        }),
+        }))),
         201,
         headers: {'content-type': 'application/json'},
       );
@@ -37,9 +40,11 @@ void main() {
       filePath: file.path,
       fileName: 'a.m4a',
       patientName: 'Jane',
+      language: 'vi',
     );
     expect(result.recordingId, 'rec_1');
-    expect(result.transcript.fullText, 'Hello');
+    expect(result.patientName, 'Lê Thị Hoa');
+    expect(result.transcript.fullText, 'đau ngực trái');
   });
 
   test('listRecordings parses list', () async {

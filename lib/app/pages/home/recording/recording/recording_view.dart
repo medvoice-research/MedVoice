@@ -63,9 +63,10 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
       body: SafeArea(
           child: Padding(
         padding: EdgeInsets.symmetric(horizontal: toSize(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
             SizedBox(height: toSize(10)),
             Text(
                 "Confidence level: ${recordingController!.confidenceLevel * 100}%",
@@ -98,6 +99,7 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
               ? _buildTimer(theme)
               : SizedBox(height: toSize(25)),
             SizedBox(height: toSize(10)),
+            const Text('Upload language'),
             SegmentedButton<String>(
               showSelectedIcon: false,
               segments: const [
@@ -105,16 +107,16 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                 ButtonSegment(value: 'en', label: Text('English')),
               ],
               selected: {recordingController!.uploadLanguage},
-              onSelectionChanged: recordingController!.speechEnabled
+              onSelectionChanged: recordingController!.speechEnabled || recordingController!.isStartingRecording
                   ? null
                   : (s) => recordingController!.setUploadLanguage(s.first),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(60), top: toSize(20)),
+              // ponytail: keep the mic and upload action clear of the overlaid 82px bottom bar.
+              padding: EdgeInsets.only(bottom: 82, top: toSize(20)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Mirrors the upload button's width so the mic stays centred.
                   const SizedBox(width: 48),
                   AvatarGlow(
                     animate: recordingController!.speechEnabled ? true : false,
@@ -148,14 +150,16 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                     tooltip: 'Upload audio',
                     icon: const Icon(Icons.upload_file),
                     color: theme.colorScheme.primary,
-                    onPressed: recordingController!.speechEnabled
+                    onPressed: recordingController!.speechEnabled ||
+                            recordingController!.isStartingRecording
                         ? null
                         : recordingController!.pickAndUploadAudio,
                   ),
                 ],
               ),
             ),
-          ],
+            ],
+          ),
         ),
       )),
     );

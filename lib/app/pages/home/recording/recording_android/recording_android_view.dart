@@ -69,9 +69,10 @@ class _RecordingAndroidView
       body: SafeArea(
           child: Padding(
         padding: EdgeInsets.symmetric(horizontal: toSize(20)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
             SizedBox(height: toSize(10)),
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
@@ -124,6 +125,7 @@ class _RecordingAndroidView
                 ? _buildTimer(theme)
                 : SizedBox(height: toSize(25)),
             SizedBox(height: toSize(10)),
+            const Text('Upload language'),
             SegmentedButton<String>(
               showSelectedIcon: false,
               segments: const [
@@ -131,17 +133,18 @@ class _RecordingAndroidView
                 ButtonSegment(value: 'en', label: Text('English')),
               ],
               selected: {recordingAndroidController!.uploadLanguage},
-              onSelectionChanged: recordingAndroidController!.speechEnabled
+              onSelectionChanged: recordingAndroidController!.speechEnabled || recordingAndroidController!.isStartingRecording
                   ? null
                   : (s) =>
                       recordingAndroidController!.setUploadLanguage(s.first),
             ),
+            const Text('Live preview uses English only'),
             Padding(
-              padding: EdgeInsets.only(bottom: toSize(60), top: toSize(20)),
+              // ponytail: keep the mic and upload action clear of the overlaid 82px bottom bar.
+              padding: EdgeInsets.only(bottom: 82, top: toSize(20)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Mirrors the upload button's width so the mic stays centred.
                   const SizedBox(width: 48),
                   AvatarGlow(
                     animate: recordingAndroidController!.speechEnabled
@@ -177,7 +180,8 @@ class _RecordingAndroidView
                     tooltip: 'Upload audio',
                     icon: const Icon(Icons.upload_file),
                     color: theme.colorScheme.primary,
-                    onPressed: recordingAndroidController!.speechEnabled
+                    onPressed: recordingAndroidController!.speechEnabled ||
+                            recordingAndroidController!.isStartingRecording
                         ? null
                         : recordingAndroidController!.pickAndUploadAudio,
                   ),
@@ -185,7 +189,8 @@ class _RecordingAndroidView
               ),
             ),
             SizedBox(height: toSize(10)),
-          ],
+            ],
+          ),
         ),
       )),
     );

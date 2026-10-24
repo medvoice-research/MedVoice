@@ -34,6 +34,11 @@ Set `Constants.baseUrl` in `lib/data/network/constants.dart` to your server:
 `http://localhost:8000/` for the emulator, your LAN IP or an ngrok URL for a
 physical device.
 
+The recorder defaults uploads to Vietnamese; choose English before recording
+to change the server transcription language. iOS live dictation follows the
+selection. Android live preview uses the bundled English-only model; the
+uploaded recording still uses the selected server language.
+
 ### Mock accounts
 
 Seeded by the backend on startup (idempotent). Login validates against

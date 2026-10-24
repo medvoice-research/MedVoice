@@ -20,9 +20,9 @@ void main() {
           'email': 'doctor@medvoice.local',
           'password': 'pw',
         });
-        return http.Response(
-          '{"access_token":"jwt123","token_type":"bearer","user":'
-          '{"id":1,"email":"doctor@medvoice.local","full_name":"Dr. Demo","role":"physician"}}',
+        return http.Response.bytes(
+          utf8.encode('{"access_token":"jwt123","token_type":"bearer","user":'
+              '{"id":1,"email":"doctor@medvoice.local","full_name":"Bác sĩ Hoa","role":"physician"}}'),
           200,
           headers: {'content-type': 'application/json'},
         );
@@ -34,7 +34,7 @@ void main() {
       expect(result.accessToken, 'jwt123');
       expect(result.user.id, 1);
       expect(result.user.email, 'doctor@medvoice.local');
-      expect(result.user.fullName, 'Dr. Demo');
+      expect(result.user.fullName, 'Bác sĩ Hoa');
       expect(result.user.role, 'physician');
     });
 

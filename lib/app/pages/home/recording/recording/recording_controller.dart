@@ -157,6 +157,7 @@ class RecordingController extends BaseController {
   }
 
   Future<void> stopListening() async {
+    final language = uploadLanguage;
     isTheSameFile = false;
     isStartingRecording = false;
     speechEnabled = false;
@@ -174,7 +175,7 @@ class RecordingController extends BaseController {
       debugPrint('path is empty');
     }
     await speech!.stop();
-    onSaveRecordingToList(tempName, duration, audioPath);
+    onSaveRecordingToList(tempName, duration, audioPath, language);
     recordingName.clear();
     refreshUI();
   }
@@ -187,21 +188,21 @@ class RecordingController extends BaseController {
     debugPrint("guideText updated to: $guideText");
   }
 
-  void onSaveRecordingToList(String title, int duration, String path) {
+  void onSaveRecordingToList(String title, int duration, String path, String language) {
     RecordingInfo item = RecordingInfo(
         path: path, recordingTitle: title, duration: duration, isToggle: false);
     Global.sampleData.add(item);
     audioFile = File(path);
     audioPath = '';
     if (audioFile != null) {
-      onUploadAudioFile(audioFile!, title);
+      onUploadAudioFile(audioFile!, title, language);
     }
     refreshUI();
   }
 
-  void onUploadAudioFile(File file, String? patientName) {
+  void onUploadAudioFile(File file, String? patientName, String language) {
     showLoadingProgress();
-    _presenter.executeUploadRecording(file, patientName, uploadLanguage);
+    _presenter.executeUploadRecording(file, patientName, language);
   }
 
   Future<void> pickAndUploadAudio() async {
@@ -219,7 +220,8 @@ class RecordingController extends BaseController {
       Navigator.pop(view.context);
       // Never delete a user-picked file; also drops a stale recording path.
       pathForDelete = '';
-      onUploadAudioFile(File(path!), recordingName.text.replaceAll(' ', '-'));
+      onUploadAudioFile(
+          File(path!), recordingName.text.replaceAll(' ', '-'), uploadLanguage);
       recordingName.clear();
     }, () {
       recordingName.clear();
@@ -228,6 +230,7 @@ class RecordingController extends BaseController {
   }
 
   void setUploadLanguage(String lang) {
+    if (isStartingRecording) return;
     uploadLanguage = lang;
     refreshUI();
   }
