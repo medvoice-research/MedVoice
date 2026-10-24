@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
 import '../../entities/recording/recording_detail.dart';
 import '../../entities/recording/recording_list.dart';
 
 abstract class AudioRepository {
   Future<RecordingDetail> uploadRecording({
-    required Uint8List fileBytes,
+    required String filePath,
     required String fileName,
     String? patientName,
     String language,

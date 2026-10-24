@@ -79,7 +79,7 @@ void main() {
       // 1. POST the real WAV. The backend transcribes synchronously, so this
       // single call takes ~30s — hence the explicit timeout on this test.
       final created = await repo.uploadRecording(
-        fileBytes: await audio.readAsBytes(),
+        filePath: audio.path,
         fileName: 'sg-1.WAV',
         patientName: 'Integration Test',
       );

@@ -111,7 +111,12 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
             ),
             Padding(
               padding: EdgeInsets.only(bottom: toSize(60), top: toSize(20)),
-              child: AvatarGlow(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+              // Mirrors the upload button's width so the mic stays centred.
+              const SizedBox(width: 48),
+              AvatarGlow(
                 animate: recordingController!.speechEnabled ? true : false,
                 glowColor: theme.colorScheme.primary,
                 glowRadiusFactor: 0.3,
@@ -139,6 +144,16 @@ class _RecordingView extends BaseStateView<RecordingView, RecordingController> {
                             size: toSize(35),
                             color: HexColor(
                                 Global.mColors['white_2'].toString())))),
+              ),
+              IconButton(
+                tooltip: 'Upload audio',
+                icon: const Icon(Icons.upload_file),
+                color: theme.colorScheme.primary,
+                onPressed: recordingController!.speechEnabled
+                    ? null
+                    : recordingController!.pickAndUploadAudio,
+              ),
+                ],
               ),
             ),
           ],
