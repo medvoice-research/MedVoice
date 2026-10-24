@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -10,11 +10,17 @@ import 'package:med_voice/data/repository_impl/audio_repository_impl.dart';
 void main() {
   Constants.baseUrl = 'http://test.local:8000/';
 
-  test('uploadRecording posts multipart and parses response', () async {
+  test('uploadRecording streams the file from disk and parses response', () async {
+    final dir = await Directory.systemTemp.createTemp('upload_test');
+    addTearDown(() => dir.delete(recursive: true));
+    final file = File('${dir.path}/visit.mp3')..writeAsStringSync('AUDIO-BYTES');
+
     final mock = MockClient((request) async {
       expect(request.method, 'POST');
       expect(request.url.path, '/recordings');
       expect(request.headers['content-type'], contains('multipart/form-data'));
+      expect(request.body, contains('filename="a.m4a"'));
+      expect(request.body, contains('AUDIO-BYTES'));
       return http.Response(
         jsonEncode({
           'recording_id': 'rec_1', 'status': 'completed', 'created_at': 't',
@@ -28,7 +34,7 @@ void main() {
     });
     final repo = AudioRepositoryImpl.withClient(mock);
     final result = await repo.uploadRecording(
-      fileBytes: Uint8List.fromList([1, 2, 3]),
+      filePath: file.path,
       fileName: 'a.m4a',
       patientName: 'Jane',
     );

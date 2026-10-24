@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -25,13 +24,13 @@ class AudioRepositoryImpl implements AudioRepository {
 
   @override
   Future<RecordingDetail> uploadRecording({
-    required Uint8List fileBytes,
+    required String filePath,
     required String fileName,
     String? patientName,
     String language = 'en',
   }) async {
     final request = http.MultipartRequest('POST', Uri.parse(Constants.recordings))
-      ..files.add(http.MultipartFile.fromBytes('file', fileBytes,
+      ..files.add(await http.MultipartFile.fromPath('file', filePath,
           filename: fileName, contentType: MediaType('application', 'octet-stream')))
       ..fields['language'] = language;
     if (patientName != null) {
