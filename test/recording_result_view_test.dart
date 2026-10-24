@@ -42,7 +42,8 @@ void main() {
     expect(find.text('Plan'), findsNothing);
     expect(find.text('Hypertension (I10)'), findsOneWidget);
     expect(find.text('diagnosis'), findsOneWidget);
-    expect(find.text('PHI detected: Jane Doe'), findsOneWidget);
+    expect(find.text('PHI detected'), findsOneWidget);
+    expect(find.text('"Jane Doe"'), findsOneWidget);
     expect(find.text('Medical terms to check'), findsNothing);
     expect(find.textContaining('Medical term check unavailable'), findsNothing);
   });
@@ -108,5 +109,98 @@ void main() {
 
     expect(find.textContaining('Medical term check unavailable'), findsOneWidget);
     expect(find.text('Medical terms to check'), findsNothing);
+  });
+
+  // rec_20261024_085430_df45e743 as served by GET /recordings/{id} (transcript trimmed).
+  final evidence = {
+    'recording_id': 'rec_20261024_085430_df45e743',
+    'status': 'completed',
+    'created_at': '2026-10-24T08:54:30.291604+00:00',
+    'patient_name': 'Nguyễn Thị Lan',
+    'language': 'vi',
+    'transcript': {
+      'full_text': 'bệnh nhân nữ năm mươi hai tuổi đến khám vì đau ngực trái và khó thở khi gắng sức',
+      'segments': [],
+    },
+    'medical_document': {
+      'soap': {
+        'subjective': '** A 52-year-old female patient presents with chest pain and shortness of breath on exertion '
+            'for the past two weeks. She has a history of hypertension and type 2 diabetes, both well-controlled. '
+            'She currently takes metformin.',
+        'objective': '** Blood pressure is 150/90 mmHg, pulse is 90/min, respiratory rate is 18/min.',
+        'assessment': '** The patient presents with atypical chest pain.',
+        'plan': '** N/A',
+      },
+      'entities': [],
+      'phi': {
+        'detected': true,
+        'entities': [
+          {'type': 'date', 'text': 'năm mươi hai tuổi', 'speaker_role': 'patient', 'start': 7, 'end': 11, 'confidence': 1.0},
+          {'type': 'medical record number (mrn)', 'text': 'không tìm thấy', 'speaker_role': 'doctor', 'start': -1, 'end': -1, 'confidence': 0.8},
+          {'type': 'age', 'text': 'năm mươi hai tuổi', 'speaker_role': 'patient', 'start': 7, 'end': 11, 'confidence': 1.0},
+        ],
+      },
+    },
+  };
+
+  testWidgets('regression_phi_banner_prints_raw_maps', (tester) async {
+    await _pump(tester, RecordingDetail.fromJson(evidence));
+
+    expect(find.textContaining('{type:'), findsNothing);
+    expect(find.textContaining('start:'), findsNothing);
+    expect(find.textContaining('không tìm thấy'), findsNothing);
+    expect(find.text('PHI detected'), findsOneWidget);
+    expect(find.textContaining('"năm mươi hai tuổi"'), findsOneWidget);
+  });
+
+  testWidgets('shows the clear banner when every PHI entity is unlocated', (tester) async {
+    await _pump(
+      tester,
+      RecordingDetail.fromJson({
+        ...evidence,
+        'medical_document': {
+          'soap': {},
+          'entities': [],
+          'phi': {
+            'detected': true,
+            'entities': [
+              {'type': 'medical record number (mrn)', 'text': 'không tìm thấy', 'speaker_role': 'doctor', 'start': -1, 'end': -1},
+            ],
+          },
+        },
+      }),
+    );
+
+    expect(find.text('No PHI detected'), findsOneWidget);
+    expect(find.text('PHI detected'), findsNothing);
+  });
+
+  testWidgets('regression_soap_leading_asterisks', (tester) async {
+    await _pump(tester, RecordingDetail.fromJson(evidence));
+
+    expect(find.textContaining('**'), findsNothing);
+    expect(find.text('Subjective'), findsOneWidget);
+    expect(find.textContaining(RegExp(r'^A 52-year-old')), findsOneWidget);
+    expect(find.text('N/A'), findsOneWidget);
+  });
+
+  testWidgets('cleans entity names and hides SOAP sections left empty by cleaning', (tester) async {
+    await _pump(
+      tester,
+      RecordingDetail.fromJson({
+        ...evidence,
+        'medical_document': {
+          'soap': {'subjective': '** chest pain', 'objective': '**', 'assessment': '', 'plan': ''},
+          'entities': [
+            {'name': '**Hypertension**', 'code': 'I10', 'category': 'diagnosis', 'speaker': 'SPEAKER_00'}
+          ],
+          'phi': {'detected': false, 'entities': []},
+        },
+      }),
+    );
+
+    expect(find.text('chest pain'), findsOneWidget);
+    expect(find.text('Objective'), findsNothing);
+    expect(find.text('Hypertension (I10)'), findsOneWidget);
   });
 }

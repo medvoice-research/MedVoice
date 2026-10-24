@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:med_voice/app/pages/home/recording/recording/recording_presenter.dart';
@@ -23,6 +22,7 @@ void main() {
     expect(repository.lastLanguage, 'vi');
     expect(repository.lastPatientName, isNull);
     expect(repository.lastFileName, 'visit.m4a');
+    expect(repository.lastFilePath, file.path);
     expect(uploaded, isNotNull);
   });
 }
@@ -31,15 +31,17 @@ class _FakeAudioRepository implements AudioRepository {
   String? lastLanguage;
   String? lastPatientName;
   String? lastFileName;
+  String? lastFilePath;
 
   @override
   Future<RecordingDetail> uploadRecording({
-    required Uint8List fileBytes,
+    required String filePath,
     required String fileName,
     String? patientName,
     String language = 'en',
   }) async {
     lastFileName = fileName;
+    lastFilePath = filePath;
     lastPatientName = patientName;
     lastLanguage = language;
     return RecordingDetail.fromJson({'recording_id': 'r1', 'language': language});

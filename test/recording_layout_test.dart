@@ -79,7 +79,7 @@ void main() {
         },
       },
     });
-    controller.refreshUI();
+    controller.notifyListeners();
     await tester.pump();
     expect(find.text('Medical terms to check'), findsOneWidget);
     await tester.scrollUntilVisible(

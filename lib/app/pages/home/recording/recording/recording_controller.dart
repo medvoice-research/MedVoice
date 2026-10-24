@@ -205,6 +205,30 @@ class RecordingController extends BaseController {
     _presenter.executeUploadRecording(file, patientName, language);
   }
 
+  Future<void> pickAndUploadAudio() async {
+    if (speechEnabled || isStartingRecording) return;
+    final String? path;
+    try {
+      path = await _presenter.pickAudioFile();
+    } catch (e) {
+      view.showErrorFromServer("Could not open file: $e");
+      return;
+    }
+    if (path == null) return;
+    view.showSaveRecordingPopup('Enter the patient name', 'Upload', 'Cancel',
+        () {
+      Navigator.pop(view.context);
+      // Never delete a user-picked file; also drops a stale recording path.
+      pathForDelete = '';
+      onUploadAudioFile(
+          File(path!), recordingName.text.replaceAll(' ', '-'), uploadLanguage);
+      recordingName.clear();
+    }, () {
+      recordingName.clear();
+      Navigator.pop(view.context);
+    }, recordingName);
+  }
+
   void setUploadLanguage(String lang) {
     if (isStartingRecording) return;
     uploadLanguage = lang;
