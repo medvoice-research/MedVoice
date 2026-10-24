@@ -4,6 +4,7 @@ import '../../domain/entities/recording/medical_document.dart';
 import '../../domain/entities/recording/recording_transcript.dart';
 import '../../domain/entities/recording/recording_detail.dart';
 import '../../domain/entities/recording/soap_note.dart';
+import 'result_text.dart';
 
 /// Renders a [RecordingDetail] as a list of cards: transcript, SOAP note,
 /// ICD-10 entities and the PHI banner. Shared by the recording screen (result
@@ -48,24 +49,26 @@ List<Widget> buildRecordingResult(BuildContext context, RecordingDetail detail) 
 }
 
 Widget _phiBanner(BuildContext context, MedicalDocument doc) {
-  final bool detected = doc.phi.detected;
+  final List<String> lines = doc.phi.detected ? phiLines(doc.phi.entities) : const [];
+  final bool detected = lines.isNotEmpty;
+  final TextStyle style = TextStyle(color: detected ? Colors.red.shade900 : Colors.green.shade900);
   return Card(
     color: detected ? Colors.red.shade100 : Colors.green.shade100,
     child: Padding(
       padding: const EdgeInsets.all(12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(detected ? Icons.warning_amber : Icons.verified_user,
               color: detected ? Colors.red.shade900 : Colors.green.shade900),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              detected
-                  ? 'PHI detected: ${doc.phi.entities.join(', ')}'
-                  : 'No PHI detected',
-              style: TextStyle(
-                  color:
-                      detected ? Colors.red.shade900 : Colors.green.shade900),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(detected ? 'PHI detected' : 'No PHI detected', style: style),
+                for (final line in lines) Text(line, style: style),
+              ],
             ),
           ),
         ],
