@@ -94,6 +94,7 @@ void main() {
           {'original': 'tái hai', 'replacement': null, 'action': 'flagged',
            'suggestions': [{'term': 'type 2', 'score': -9.0}, {'term': 'tái phát', 'score': -12.0},
                            {'term': 'viêm phổi', 'score': -13.0}, {'term': 'ignore me', 'score': -15.0}]},
+          {'original': 'không rõ', 'replacement': null, 'action': 'flagged', 'suggestions': []},
         ],
       })),
     );
@@ -101,14 +102,17 @@ void main() {
     expect(find.text('Medical terms to check'), findsOneWidget);
     expect(find.text('"men hormone" → metformin (corrected from the audio)'), findsOneWidget);
     expect(find.text('"tái hai": check against the audio. Maybe: type 2, tái phát, viêm phổi'), findsOneWidget);
+    expect(find.text('"không rõ": check against the audio'), findsOneWidget);
     expect(find.textContaining('ignore me'), findsNothing);
   });
 
   testWidgets('warns when the term check could not run', (tester) async {
-    await _pump(tester, RecordingDetail.fromJson(withReview({'status': 'unavailable', 'terms': []})));
+    for (final status in ['unavailable', 'error']) {
+      await _pump(tester, RecordingDetail.fromJson(withReview({'status': status, 'terms': []})));
 
-    expect(find.textContaining('Medical term check unavailable'), findsOneWidget);
-    expect(find.text('Medical terms to check'), findsNothing);
+      expect(find.textContaining('Medical term check unavailable'), findsOneWidget);
+      expect(find.text('Medical terms to check'), findsNothing);
+    }
   });
 
   // rec_20261024_085430_df45e743 as served by GET /recordings/{id} (transcript trimmed).
