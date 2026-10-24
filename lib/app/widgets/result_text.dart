@@ -36,3 +36,12 @@ class _PhiGroup {
 bool _isNegative(Object? v) => v is num && v < 0;
 
 String _capitalise(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+
+final RegExp _bold = RegExp(r'\*\*(?=\S)(.+?)(?<=\S)\*\*');
+final RegExp _edgeEmphasis = RegExp(r'^(?:\*\*|__)\s*|\s*(?:\*\*|__)$');
+
+/// Strips markdown emphasis the LLM leaves in SOAP text (records stored before
+/// the backend parser fix start with `** `): unwraps `**x**`, drops stray
+/// leading/trailing `**`/`__`, trims. List bullets (`- `, `* `) are kept.
+String cleanMarkdown(String text) =>
+    text.trim().replaceAllMapped(_bold, (m) => m[1]!).replaceAll(_edgeEmphasis, '').trim();

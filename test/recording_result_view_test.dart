@@ -170,4 +170,33 @@ void main() {
     expect(find.text('No PHI detected'), findsOneWidget);
     expect(find.text('PHI detected'), findsNothing);
   });
+
+  testWidgets('regression_soap_leading_asterisks', (tester) async {
+    await _pump(tester, RecordingDetail.fromJson(evidence));
+
+    expect(find.textContaining('**'), findsNothing);
+    expect(find.text('Subjective'), findsOneWidget);
+    expect(find.textContaining(RegExp(r'^A 52-year-old')), findsOneWidget);
+    expect(find.text('N/A'), findsOneWidget);
+  });
+
+  testWidgets('cleans entity names and hides SOAP sections left empty by cleaning', (tester) async {
+    await _pump(
+      tester,
+      RecordingDetail.fromJson({
+        ...evidence,
+        'medical_document': {
+          'soap': {'subjective': '** chest pain', 'objective': '**', 'assessment': '', 'plan': ''},
+          'entities': [
+            {'name': '**Hypertension**', 'code': 'I10', 'category': 'diagnosis', 'speaker': 'SPEAKER_00'}
+          ],
+          'phi': {'detected': false, 'entities': []},
+        },
+      }),
+    );
+
+    expect(find.text('chest pain'), findsOneWidget);
+    expect(find.text('Objective'), findsNothing);
+    expect(find.text('Hypertension (I10)'), findsOneWidget);
+  });
 }

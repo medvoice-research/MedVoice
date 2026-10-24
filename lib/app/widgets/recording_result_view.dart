@@ -31,7 +31,7 @@ List<Widget> buildRecordingResult(BuildContext context, RecordingDetail detail) 
                   children: [
                     Expanded(
                       child: Text(
-                        e.code.isEmpty ? e.name : '${e.name} (${e.code})',
+                        e.code.isEmpty ? cleanMarkdown(e.name) : '${cleanMarkdown(e.name)} (${e.code})',
                       ),
                     ),
                     if (e.category.isNotEmpty)
@@ -118,10 +118,10 @@ List<Widget> _soapSections(BuildContext context, SoapNote soap) {
   if (soap.isEmpty) return const [];
   return [
     for (final entry in {
-      'Subjective': soap.subjective,
-      'Objective': soap.objective,
-      'Assessment': soap.assessment,
-      'Plan': soap.plan,
+      'Subjective': cleanMarkdown(soap.subjective),
+      'Objective': cleanMarkdown(soap.objective),
+      'Assessment': cleanMarkdown(soap.assessment),
+      'Plan': cleanMarkdown(soap.plan),
     }.entries)
       if (entry.value.isNotEmpty)
         _section(context, entry.key, Text(entry.value)),

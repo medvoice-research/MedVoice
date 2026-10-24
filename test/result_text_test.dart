@@ -52,4 +52,30 @@ void main() {
       expect(phiLines([evidencePhi[1]]), isEmpty);
     });
   });
+
+  group('cleanMarkdown', () {
+    test('drops the leading "** " stored by the old SOAP parser', () {
+      expect(
+        cleanMarkdown('** A 52-year-old female patient presents with chest pain.'),
+        'A 52-year-old female patient presents with chest pain.',
+      );
+      expect(cleanMarkdown('** N/A'), 'N/A');
+    });
+
+    test('unwraps inline bold and keeps list bullets', () {
+      expect(
+        cleanMarkdown('**Aspirin** 81 mg daily\n- ECG today\n* **Echo** within a week'),
+        'Aspirin 81 mg daily\n- ECG today\n* Echo within a week',
+      );
+    });
+
+    test('strips trailing ** and surrounding __ and trims', () {
+      expect(cleanMarkdown(' Stable ** '), 'Stable');
+      expect(cleanMarkdown('__Follow-up in 1 week__'), 'Follow-up in 1 week');
+    });
+
+    test('leaves an emphasis-only string empty', () {
+      expect(cleanMarkdown('**'), isEmpty);
+    });
+  });
 }
