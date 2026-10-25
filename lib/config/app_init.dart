@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:med_voice/app/widgets/theme.dart';
@@ -7,6 +8,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import '../app/pages/onboarding/startup/startup_view.dart';
 import '../app/utils/global.dart';
+import '../data/network/constants.dart';
 import 'dart:async';
 
 import 'app_config.dart';
@@ -23,6 +25,7 @@ class MyApp extends StatefulWidget {
   final AppConfig appConfig;
 
   MyApp(this.appConfig, {Key? key}) : super(key: key) {
+    if (kDebugMode) debugPrint('BACKEND_ENDPOINT = ${Constants.baseUrl}');
     //set base url
     //Constants.baseUrl = appConfig.baseURL;
     //Global.mGoogleKey = appConfig.googleKey;

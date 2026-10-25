@@ -20,3 +20,40 @@ publish:
 	git fetch
 	git pull
 	git push -u
+
+# --- Backend endpoint (BACKEND_ENDPOINT in .env, compiled in via --dart-define-from-file) ---
+METRICS ?= localhost:20241
+SIM ?= booted
+BUNDLE_ID := vn.edu.rmit.capstone.medVoice
+DEFINES := --dart-define-from-file=.env
+
+.PHONY: env tunnel-env local-env set-endpoint print-endpoint run ios-sim
+
+env:
+	@test -f .env || { cp .env.example .env; echo "created .env from .env.example"; }
+
+# Write the running cloudflared quick-tunnel URL into .env
+tunnel-env: env
+	@host=$$(curl -s -m 3 http://$(METRICS)/quicktunnel | python3 -c 'import sys,json;print(json.load(sys.stdin).get("hostname",""))' 2>/dev/null); \
+	if [ -z "$$host" ]; then echo "No cloudflared quick tunnel found at $(METRICS) - start: cloudflared tunnel --url http://localhost:8000"; exit 1; fi; \
+	$(MAKE) --no-print-directory set-endpoint URL=https://$$host/
+
+local-env: env
+	@$(MAKE) --no-print-directory set-endpoint URL=http://localhost:8000/
+
+# Replace (or add) the BACKEND_ENDPOINT line, keep everything else
+set-endpoint:
+	@test -n "$(URL)" || { echo "usage: make set-endpoint URL=https://host/"; exit 1; }
+	@{ grep -v '^BACKEND_ENDPOINT=' .env; echo "BACKEND_ENDPOINT=$(URL)"; } > .env.tmp && mv .env.tmp .env
+	@echo "BACKEND_ENDPOINT=$(URL)  (rebuild the app: make ios-sim)"
+
+print-endpoint: env
+	@grep '^BACKEND_ENDPOINT=' .env || echo "BACKEND_ENDPOINT not set (default http://localhost:8000/)"
+
+run: env
+	fvm flutter run $(DEFINES) $(if $(DEVICE),-d $(DEVICE)) $(ARGS)
+
+ios-sim: env
+	fvm flutter build ios --simulator --debug $(DEFINES)
+	xcrun simctl install $(SIM) build/ios/iphonesimulator/Runner.app
+	xcrun simctl launch $(SIM) $(BUNDLE_ID)

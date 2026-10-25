@@ -30,9 +30,20 @@ over its `/recordings` API (multipart upload of a recorded or picked audio file 
 document; list, get, delete, audio replay) and `/auth/login` (mock-account
 authentication).
 
-Set `Constants.baseUrl` in `lib/data/network/constants.dart` to your server:
-`http://localhost:8000/` for the emulator, your LAN IP or an ngrok URL for a
-physical device.
+Set `BACKEND_ENDPOINT` in `.env` (gitignored; template in `.env.example`).
+It is compiled in via `--dart-define-from-file=.env`, so rebuild after changing
+it. Default: `http://localhost:8000/` (iOS simulator).
+
+```bash
+make env                    # create .env from .env.example if missing
+make tunnel-env             # write the running Cloudflare quick-tunnel URL into .env
+make local-env              # back to http://localhost:8000/
+make print-endpoint         # show the current value
+make ios-sim                # build + install + launch on the booted iOS simulator
+make run DEVICE=<udid>      # fvm flutter run with the .env defines
+```
+
+Debug builds log `BACKEND_ENDPOINT = ...` at startup.
 
 The recorder defaults uploads to Vietnamese; choose English before recording
 to change the server transcription language. iOS live dictation follows the
